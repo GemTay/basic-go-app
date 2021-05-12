@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -16,10 +17,25 @@ func main() {
 
 	sm := mux.NewRouter()
 
+	type templateData struct {
+		Title   string
+		Message string
+	}
+
+	gemmasMessage := templateData{
+		"Hello World",
+		"This is a message from Gemma",
+	}
+
 	sm.HandleFunc("/hello-world", func(w http.ResponseWriter, r *http.Request) {
 		l.Println("Running the hello world handler")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Hello world!"))
+		parsedTemplate, _ := template.ParseFiles("./web/templates/hello-world.html")
+		err := parsedTemplate.Execute(w, gemmasMessage)
+		if err != nil {
+			log.Println("Error executing template :", err)
+			return
+		}
 	})
 
 	s := &http.Server{
