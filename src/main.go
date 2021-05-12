@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"text/template"
 	"time"
 
@@ -14,12 +14,12 @@ import (
 )
 
 func main() {
-	CreateTable()
+	// CreateTable()
 
 	var drink Drink = Drink{
 		Id:    1,
 		Name:  "Americano",
-		Price: 2.10,
+		Price: 2.15,
 	}
 
 	PutItem(drink)
@@ -34,20 +34,21 @@ func main() {
 	// creating the serve mux router
 	sm := mux.NewRouter()
 
-	// creating some template data to be passed in
-	tplData := GetItem(1)
-
 	// parsing all the templates ready to be executed
 	tpls := template.Must(template.ParseGlob("./web/templates/*"))
 
-	sm.HandleFunc("/hello-world", func(w http.ResponseWriter, r *http.Request) {
-		l.Println("Running the hello world handler")
-		fmt.Println(GetItem(1))
-		w.WriteHeader(http.StatusOK)
+	sm.HandleFunc("/drinks/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
+		l.Println("Running the get drink handler")
 
-		err := tpls.ExecuteTemplate(w, "hello-world.html", tplData)
+		id, convErr := strconv.Atoi(mux.Vars(r)["id"])
+		if convErr != nil {
+			l.Println("Error converting id from string to int :", convErr)
+			return
+		}
+
+		err := tpls.ExecuteTemplate(w, "get-drink.html", GetItem(id))
 		if err != nil {
-			log.Println("Error executing template :", err)
+			l.Println("Error executing template :", err)
 			return
 		}
 	})

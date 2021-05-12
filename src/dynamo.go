@@ -70,7 +70,7 @@ func PutItem(drink Drink) {
 				S: aws.String(drink.Name),
 			},
 			"Price": {
-				N: aws.String(strconv.FormatFloat(drink.Price, 'E', -1, 64)),
+				N: aws.String(strconv.FormatFloat(drink.Price, 'f', 2, 64)),
 			},
 		},
 		TableName: aws.String(TABLE_NAME),
@@ -94,7 +94,7 @@ func UpdateItem(drink Drink) {
 				S: aws.String(drink.Name),
 			},
 			":Price": {
-				N: aws.String(strconv.FormatFloat(drink.Price, 'E', -1, 64)),
+				N: aws.String(strconv.FormatFloat(drink.Price, 'f', 2, 64)),
 			},
 		},
 		Key: map[string]*dynamodb.AttributeValue{
