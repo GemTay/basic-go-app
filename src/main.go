@@ -13,8 +13,10 @@ import (
 )
 
 func main() {
+	// logger
 	l := log.New(os.Stdout, "basic-app", log.LstdFlags)
 
+	// creating the serve mux router
 	sm := mux.NewRouter()
 
 	type templateData struct {
@@ -22,11 +24,13 @@ func main() {
 		Date  string
 	}
 
+	// creating some template data to be passed in
 	tplData := templateData{
 		"Hello World",
 		time.Now().Format("Mon Jan 2 15:04:05 MST 2006"),
 	}
 
+	// parsing all the templates ready to be executed
 	tpls := template.Must(template.ParseGlob("./web/templates/*"))
 
 	sm.HandleFunc("/hello-world", func(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +44,7 @@ func main() {
 		}
 	})
 
+	// setting up the http server
 	s := &http.Server{
 		Addr:         ":8080",
 		Handler:      sm,
@@ -49,6 +54,7 @@ func main() {
 		WriteTimeout: 15 * time.Minute,
 	}
 
+	// starting the server
 	go func() {
 		err := s.ListenAndServe()
 		if err != nil {
@@ -57,6 +63,7 @@ func main() {
 		l.Println("Server is up and running!")
 	}()
 
+	// catching interrupt and kill signals to gracefully shutdown the server
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, os.Kill)
 	sig := <-c
