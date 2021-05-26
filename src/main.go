@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
-	"text/template"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -21,25 +19,7 @@ func main() {
 
 	// creating the serve mux router
 	sm := mux.NewRouter()
-
-	// parsing all the templates ready to be executed
-	tpls := template.Must(template.ParseGlob("./web/templates/*"))
-
-	sm.HandleFunc("/drinks/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
-		l.Println("Running the get drink handler")
-
-		id, convErr := strconv.Atoi(mux.Vars(r)["id"])
-		if convErr != nil {
-			l.Println("Error converting id from string to int :", convErr)
-			return
-		}
-
-		err := tpls.ExecuteTemplate(w, "get-drink.html", GetItem(id))
-		if err != nil {
-			l.Println("Error executing template :", err)
-			return
-		}
-	})
+	sm.HandleFunc("/drinks/{id:[0-9]+}", GetDrink).Methods("GET")
 
 	// setting up the http server
 	s := &http.Server{

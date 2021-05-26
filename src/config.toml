@@ -1,0 +1,4 @@
+baseURL = "http://localhost:8080/drinks/3"
+languageCode = "en-us"
+title = "Hugo"
+theme = "hugo-hero-theme"
