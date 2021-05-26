@@ -45,6 +45,41 @@ func GetDrink(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func AddDrink(w http.ResponseWriter, r *http.Request) {
+	log.Println("Running the ADD drink handler")
+
+	tpls := template.Must(template.ParseGlob("./web/templates/*"))
+
+	if r.Method != http.MethodPost {
+		err := tpls.ExecuteTemplate(w, "add-drink.html", nil)
+		if err != nil {
+			log.Println("Error executing template :", err)
+			return
+		}
+		return
+	}
+
+	p, err := strconv.ParseFloat(r.FormValue("drink-price"), 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	drink := Drink{
+		Id:    4,
+		Name:  r.FormValue("drink-name"),
+		Price: p,
+	}
+
+	PutItem(drink)
+
+	e := tpls.ExecuteTemplate(w, "add-drink.html", struct{ Success bool }{true})
+	if e != nil {
+		log.Println("Error executing template :", err)
+		return
+	}
+
+}
+
 func seedDrinks() {
 	for _, drink := range drinksList {
 		PutItem(Drink{

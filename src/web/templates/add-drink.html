@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Drinks</title>
+	</head>
+	<body>
+		{{if .Success}}
+		<h1>Your drink has been added!!</h1>
+		{{else}}
+		<h2>Add a drink</h2>
+		<form method="POST">
+			<label>Title:</label><br />
+			<input type="text" name="drink-name" /><br />
+			<label>Price:</label><br />
+			<input type="text" name="drink-price" /><br /><br />
+			<input type="submit" value="Add drink" />
+		</form>
+		{{end}}
+	</body>
+</html>

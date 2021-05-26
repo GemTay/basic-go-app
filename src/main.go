@@ -20,6 +20,7 @@ func main() {
 	// creating the serve mux router
 	sm := mux.NewRouter()
 	sm.HandleFunc("/drinks/{id:[0-9]+}", GetDrink).Methods("GET")
+	sm.HandleFunc("/add-drink", AddDrink).Methods("GET", "POST")
 
 	// setting up the http server
 	s := &http.Server{
