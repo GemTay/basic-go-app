@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/gorilla/mux"
@@ -32,4 +34,22 @@ func TestGetItem(t *testing.T) {
 
 	assert.IsType(t, Drink{}, r)
 	assert.Equal(t, Drink{1, "Latte", 2.45}, r)
+}
+
+func TestAddDrink(t *testing.T) {
+	form := url.Values{}
+	form.Add("drink-name", "Tea")
+	form.Add("drink-price", "1.50")
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("POST", "/add-drink", strings.NewReader(form.Encode()))
+
+	AddDrink(w, r)
+
+	res := w.Result()
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		t.Errorf("Expected status OK, got %v", res.StatusCode)
+	}
 }
