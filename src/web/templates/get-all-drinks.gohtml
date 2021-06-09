@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <style>
+			table,
+			th,
+			td {
+				border: 1px solid #cccccc;
+				border-collapse: collapse;
+				padding: 15px;
+			}
+			a {
+				display: inline;
+				padding: 30px 15px 0 15px;
+			}
+			.nav-bar {
+				padding-top: 10px;
+			}
+            #main-content {
+				padding: 10px;
+			}
+		</style>
+		<title>All drinks</title>
+	</head>
+	<body>
+        <div class="nav-bar">
+            <a href="http://localhost:8080/add-drink">Add new drink</a>
+        </div>
+		<main id="main-content" role="main">
+            <h2>All drinks:</h2>
+            <table>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                </tr>
+                {{range .}}
+                <tr>
+                    <td>{{.Id}}</td>
+                    <td>{{.Name}}</td>
+                    <td>£{{.Price}}</td>
+                    <td><a href="http://localhost:8080/drinks/{{.Id}}">Details</a></td>
+                </tr>
+                {{end}}
+            </table>
+        </main>
+	</body>
+</html>
+
+

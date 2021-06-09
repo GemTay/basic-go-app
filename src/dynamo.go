@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -135,4 +136,26 @@ func GetItem(id int) (drink Drink) {
 	}
 
 	return drink
+}
+
+func GetAllItems() []Drink {
+	result, err := dynamo.Scan(&dynamodb.ScanInput{
+		TableName: aws.String(TABLE_NAME),
+	})
+
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			fmt.Println(aerr.Error())
+		}
+	}
+
+	drinks := []Drink{}
+
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &drinks)
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
+
+	return drinks
 }

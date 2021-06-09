@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			a {
+				display: inline;
+				padding: 30px 15px 0 15px;
+			}
+			.nav-bar {
+				padding-top: 10px;
+			}
+			#main-content {
+				padding: 10px;
+			}
+		</style>
+		<title>Add drink</title>
+	</head>
+	<body>
+		<div class="nav-bar">
+			<a href="http://localhost:8080/all-drinks">All drinks</a>
+		</div>
+		<main id="main-content" role="main">
+			{{if .Success}}
+			<h1>Your drink has been added!!</h1>
+			{{else}}
+				<h2>Add a drink</h2>
+				<form method="POST">
+					<label>Title:</label><br />
+					<input type="text" name="drink-name" /><br />
+					<label>Price:</label><br />
+					<input type="text" name="drink-price" /><br /><br />
+					<input type="submit" value="Add drink" />
+				</form>
+			{{end}}
+        </main>
+	</body>
+</html>
+
+

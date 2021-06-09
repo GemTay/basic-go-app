@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			a {
+				display: inline;
+				padding: 30px 15px 0 15px;
+			}
+			.nav-bar {
+				padding-top: 10px;
+			}
+			#main-content {
+				padding: 10px;
+			}
+		</style>
+		<title>Get drink</title>
+	</head>
+	<body>
+		<div class="nav-bar">
+			<a href="http://localhost:8080/add-drink">Add new drink</a>
+			<a href="http://localhost:8080/all-drinks">All drinks</a>
+		</div>
+		<main id="main-content" role="main">
+			<h1>Chosen drink:</h1>
+			<h2>ID: {{ .Id }}</h2>
+			<h2>Name: {{ .Name }}</h2>
+			<h2>Price: £{{ .Price }}</h2>
+        </main>
+	</body>
+</html>
