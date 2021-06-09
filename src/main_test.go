@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/gorilla/mux"
 	dynamock "github.com/gusaul/go-dynamock"
-	"github.com/stretchr/testify/assert"
 )
 
 var mock *dynamock.DynaMock
@@ -21,26 +21,39 @@ func init() {
 	Dyna.Db, mock = dynamock.New()
 }
 
-func TestGetName(t *testing.T) {
+func TestGetItem(t *testing.T) {
+	expectedResult := Drink{
+		Id:    1,
+		Name:  "Latte",
+		Price: 2.45,
+	}
+
 	expectKey := map[string]*dynamodb.AttributeValue{
-		"id": {
-			N: aws.String("1"),
+		"Id": {
+			N: aws.String(strconv.Itoa(expectedResult.Id)),
 		},
 	}
 
-	expectedResult := aws.String("jaka")
 	result := dynamodb.GetItemOutput{
 		Item: map[string]*dynamodb.AttributeValue{
-			"name": {
-				S: expectedResult,
+			"Id": {
+				N: aws.String(strconv.Itoa(expectedResult.Id)),
+			},
+			"Name": {
+				S: &expectedResult.Name,
+			},
+			"Price": {
+				N: aws.String(strconv.FormatFloat(expectedResult.Price, 'f', 2, 64)),
 			},
 		},
 	}
 
-	//lets start dynamock in action
-	mock.ExpectGetItem().ToTable("employee").WithKeys(expectKey).WillReturns(result)
+	mock.ExpectGetItem().
+		ToTable("drinks").
+		WithKeys(expectKey).
+		WillReturns(result)
 
-	actualResult, _ := GetName("1")
+	actualResult := GetItem(1)
 	if actualResult != expectedResult {
 		t.Errorf("Test Fail")
 	}
@@ -62,13 +75,6 @@ func TestGetDrinkHandler(t *testing.T) {
 	if res.StatusCode != http.StatusOK {
 		t.Errorf("Expected status OK, got %v", res.StatusCode)
 	}
-}
-
-func TestGetItem(t *testing.T) {
-	r := GetItem(1)
-
-	assert.IsType(t, Drink{}, r)
-	assert.Equal(t, Drink{1, "Latte", 2.45}, r)
 }
 
 func TestAddDrink(t *testing.T) {

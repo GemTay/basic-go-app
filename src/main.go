@@ -8,10 +8,28 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/gorilla/mux"
 )
 
+type MyDynamo struct {
+	Db dynamodbiface.DynamoDBAPI
+}
+
+var Dyna *MyDynamo
+
+func ConfigureDynamoDB() {
+	Dyna = new(MyDynamo)
+	awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("eu-west-1")})
+	svc := dynamodb.New(awsSession)
+	Dyna.Db = dynamodbiface.DynamoDBAPI(svc)
+}
+
 func main() {
+	ConfigureDynamoDB()
 	seedDrinks()
 
 	// logger

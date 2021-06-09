@@ -33,7 +33,6 @@ func GetAllDrinks(w http.ResponseWriter, r *http.Request) {
 	log.Println("Running the GET ALL drinks handler")
 
 	drinks := GetAllItems()
-	log.Println(drinks)
 
 	err := tpls.ExecuteTemplate(w, "get-all-drinks.gohtml", drinks)
 	if err != nil {
@@ -76,7 +75,7 @@ func AddDrink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	drink := Drink{
-		Id:    4, //needs fixing
+		Id:    5, //needs fixing
 		Name:  r.FormValue("drink-name"),
 		Price: p,
 	}

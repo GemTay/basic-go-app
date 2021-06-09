@@ -7,12 +7,11 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
-var dynamo *dynamodb.DynamoDB
+// var dynamo *dynamodb.DynamoDB
 
 type Drink struct {
 	Id    int
@@ -22,18 +21,18 @@ type Drink struct {
 
 const TABLE_NAME = "drinks"
 
-func init() {
-	dynamo = connectDynamoDB()
-}
+// func init() {
+// 	dynamo = connectDynamoDB()
+// }
 
-func connectDynamoDB() (db *dynamodb.DynamoDB) {
-	return dynamodb.New(session.Must(session.NewSession(&aws.Config{
-		Region: aws.String("eu-west-1"),
-	})))
-}
+// func connectDynamoDB() (db *dynamodb.DynamoDB) {
+// 	return dynamodb.New(session.Must(session.NewSession(&aws.Config{
+// 		Region: aws.String("eu-west-1"),
+// 	})))
+// }
 
 func CreateTable() {
-	_, err := dynamo.CreateTable(&dynamodb.CreateTableInput{
+	_, err := Dyna.Db.CreateTable(&dynamodb.CreateTableInput{
 		AttributeDefinitions: []*dynamodb.AttributeDefinition{
 			{
 				AttributeName: aws.String("Id"),
@@ -51,8 +50,7 @@ func CreateTable() {
 			WriteCapacityUnits: aws.Int64(1),
 		},
 		TableName: aws.String(TABLE_NAME),
-	},
-	)
+	})
 
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
@@ -62,7 +60,7 @@ func CreateTable() {
 }
 
 func PutItem(drink Drink) {
-	_, err := dynamo.PutItem(&dynamodb.PutItemInput{
+	_, err := Dyna.Db.PutItem(&dynamodb.PutItemInput{
 		Item: map[string]*dynamodb.AttributeValue{
 			"Id": {
 				N: aws.String(strconv.Itoa(drink.Id)),
@@ -85,7 +83,7 @@ func PutItem(drink Drink) {
 }
 
 func UpdateItem(drink Drink) {
-	_, err := dynamo.UpdateItem(&dynamodb.UpdateItemInput{
+	_, err := Dyna.Db.UpdateItem(&dynamodb.UpdateItemInput{
 		ExpressionAttributeNames: map[string]*string{
 			"#N": aws.String("Name"),
 			"#P": aws.String("Price"),
@@ -115,7 +113,7 @@ func UpdateItem(drink Drink) {
 }
 
 func GetItem(id int) (drink Drink) {
-	result, err := dynamo.GetItem(&dynamodb.GetItemInput{
+	result, err := Dyna.Db.GetItem(&dynamodb.GetItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
 			"Id": {
 				N: aws.String(strconv.Itoa(id)),
@@ -139,7 +137,7 @@ func GetItem(id int) (drink Drink) {
 }
 
 func GetAllItems() []Drink {
-	result, err := dynamo.Scan(&dynamodb.ScanInput{
+	result, err := Dyna.Db.Scan(&dynamodb.ScanInput{
 		TableName: aws.String(TABLE_NAME),
 	})
 
