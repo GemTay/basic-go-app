@@ -59,6 +59,90 @@ func TestGetItem(t *testing.T) {
 	}
 }
 
+func TestPutItem(t *testing.T) {
+	dr := Drink{
+		Id:    1,
+		Name:  "Latte",
+		Price: 2.45,
+	}
+
+	result := dynamodb.PutItemOutput{
+		Attributes: map[string]*dynamodb.AttributeValue{
+			"Id": {
+				N: aws.String(strconv.Itoa(dr.Id)),
+			},
+			"Name": {
+				S: &dr.Name,
+			},
+			"Price": {
+				N: aws.String(strconv.FormatFloat(dr.Price, 'f', 2, 64)),
+			},
+		},
+	}
+
+	mock.ExpectPutItem().
+		ToTable("drinks").
+		WithItems(result.Attributes).
+		WillReturns(result)
+
+	PutItem(dr)
+	if actualResult != result {
+		t.Errorf("Test Fail")
+	}
+}
+
+func TestGetAllItems(t *testing.T) {
+	expectedResult := []Drink{
+		Drink{
+			Id:    1,
+			Name:  "Latte",
+			Price: 2.45,
+		},
+		Drink{
+			Id:    2,
+			Name:  "Espresso",
+			Price: 1.99,
+		},
+	}
+
+	result := dynamodb.ScanOutput{
+		Items: []map[string]*dynamodb.AttributeValue{
+			{
+				"Id": {
+					N: aws.String(strconv.Itoa(expectedResult[0].Id)),
+				},
+				"Name": {
+					S: aws.String(expectedResult[0].Name),
+				},
+				"Price": {
+					N: aws.String(strconv.FormatFloat(expectedResult[0].Price, 'f', 2, 64)),
+				},
+			},
+			{
+				"Id": {
+					N: aws.String(strconv.Itoa(expectedResult[1].Id)),
+				},
+				"Name": {
+					S: &expectedResult[1].Name,
+				},
+				"Price": {
+					N: aws.String(strconv.FormatFloat(expectedResult[1].Price, 'f', 2, 64)),
+				},
+			},
+		},
+	}
+
+	mock.ExpectScan().Table("drinks").WillReturns(result)
+
+	actualResult := GetAllItems()
+
+	for i, _ := range actualResult {
+		if actualResult[i] != expectedResult[i] {
+			t.Errorf("Drink with index %d did not match expected", i)
+		}
+	}
+}
+
 func TestGetDrinkHandler(t *testing.T) {
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/drinks/", nil)

@@ -11,8 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
-// var dynamo *dynamodb.DynamoDB
-
 type Drink struct {
 	Id    int
 	Name  string
@@ -20,6 +18,8 @@ type Drink struct {
 }
 
 const TABLE_NAME = "drinks"
+
+// var dynamo *dynamodb.DynamoDB
 
 // func init() {
 // 	dynamo = connectDynamoDB()
@@ -53,8 +53,11 @@ func CreateTable() {
 	})
 
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			fmt.Println(aerr.Error())
+		if awsErr, ok := err.(awserr.Error); ok {
+			// Prints out full error message, including original error if there was one.
+			log.Println("Error:", awsErr.Error())
+		} else {
+			fmt.Println(err.Error())
 		}
 	}
 }
@@ -76,8 +79,10 @@ func PutItem(drink Drink) {
 	})
 
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			fmt.Println(aerr.Error())
+		if awsErr, ok := err.(awserr.Error); ok {
+			log.Println("Error:", awsErr.Error())
+		} else {
+			fmt.Println(err.Error())
 		}
 	}
 }
@@ -106,8 +111,10 @@ func UpdateItem(drink Drink) {
 	})
 
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			fmt.Println(aerr.Error())
+		if awsErr, ok := err.(awserr.Error); ok {
+			log.Println("Error:", awsErr.Error())
+		} else {
+			fmt.Println(err.Error())
 		}
 	}
 }
@@ -123,14 +130,17 @@ func GetItem(id int) (drink Drink) {
 	})
 
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			fmt.Println(aerr.Error())
+		if awsErr, ok := err.(awserr.Error); ok {
+			// Prints out full error message, including original error if there was one.
+			log.Println("Error:", awsErr.Error())
+		} else {
+			fmt.Println(err.Error())
 		}
 	}
 
 	err = dynamodbattribute.UnmarshalMap(result.Item, &drink)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
 	}
 
 	return drink
@@ -142,8 +152,10 @@ func GetAllItems() []Drink {
 	})
 
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			fmt.Println(aerr.Error())
+		if awsErr, ok := err.(awserr.Error); ok {
+			log.Println("Error:", awsErr.Error())
+		} else {
+			fmt.Println(err.Error())
 		}
 	}
 
