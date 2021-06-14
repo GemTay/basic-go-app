@@ -1,11 +1,11 @@
 package main
 
 import (
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/GemTay/basic-go-app/web/templates"
 	"github.com/gorilla/mux"
 )
 
@@ -27,14 +27,12 @@ var drinksList = []*Drink{
 	},
 }
 
-var tpls = template.Must(template.ParseGlob("./web/templates/*"))
-
 func GetAllDrinks(w http.ResponseWriter, r *http.Request) {
 	log.Println("Running the GET ALL drinks handler")
 
 	drinks := GetAllItems()
 
-	render(w, "get-all-drinks.gohtml", drinks)
+	templates.Render(w, "get-all-drinks.gohtml", drinks)
 }
 
 func GetDrink(w http.ResponseWriter, r *http.Request) {
@@ -46,14 +44,14 @@ func GetDrink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render(w, "get-drink.gohtml", GetItem(id))
+	templates.Render(w, "get-drink.gohtml", GetItem(id))
 }
 
 func AddDrink(w http.ResponseWriter, r *http.Request) {
 	log.Println("Running the ADD drink handler")
 
 	if r.Method != http.MethodPost {
-		render(w, "add-drink.gohtml", nil)
+		templates.Render(w, "add-drink.gohtml", nil)
 		return
 	}
 
@@ -70,16 +68,7 @@ func AddDrink(w http.ResponseWriter, r *http.Request) {
 
 	PutItem(drink)
 
-	render(w, "add-drink.gohtml", struct{ Success bool }{true})
-}
-
-func render(w http.ResponseWriter, filename string, data interface{}) {
-
-	err := tpls.ExecuteTemplate(w, filename, data)
-	if err != nil {
-		log.Println("Error executing template :", err)
-		return
-	}
+	templates.Render(w, "add-drink.gohtml", struct{ Success bool }{true})
 }
 
 func seedDrinks() {
