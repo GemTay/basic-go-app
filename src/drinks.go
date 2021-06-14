@@ -34,11 +34,7 @@ func GetAllDrinks(w http.ResponseWriter, r *http.Request) {
 
 	drinks := GetAllItems()
 
-	err := tpls.ExecuteTemplate(w, "get-all-drinks.gohtml", drinks)
-	if err != nil {
-		log.Println("Error executing template :", err)
-		return
-	}
+	render(w, "get-all-drinks.gohtml", drinks)
 }
 
 func GetDrink(w http.ResponseWriter, r *http.Request) {
@@ -50,22 +46,14 @@ func GetDrink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := tpls.ExecuteTemplate(w, "get-drink.gohtml", GetItem(id))
-	if err != nil {
-		log.Println("Error executing template :", err)
-		return
-	}
+	render(w, "get-drink.gohtml", GetItem(id))
 }
 
 func AddDrink(w http.ResponseWriter, r *http.Request) {
 	log.Println("Running the ADD drink handler")
 
 	if r.Method != http.MethodPost {
-		err := tpls.ExecuteTemplate(w, "add-drink.gohtml", nil)
-		if err != nil {
-			log.Println("Error executing template :", err)
-			return
-		}
+		render(w, "add-drink.gohtml", nil)
 		return
 	}
 
@@ -82,12 +70,16 @@ func AddDrink(w http.ResponseWriter, r *http.Request) {
 
 	PutItem(drink)
 
-	e := tpls.ExecuteTemplate(w, "add-drink.gohtml", struct{ Success bool }{true})
-	if e != nil {
+	render(w, "add-drink.gohtml", struct{ Success bool }{true})
+}
+
+func render(w http.ResponseWriter, filename string, data interface{}) {
+
+	err := tpls.ExecuteTemplate(w, filename, data)
+	if err != nil {
 		log.Println("Error executing template :", err)
 		return
 	}
-
 }
 
 func seedDrinks() {

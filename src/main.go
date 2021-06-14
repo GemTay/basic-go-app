@@ -21,6 +21,8 @@ type MyDynamo struct {
 
 var Dyna *MyDynamo
 
+// this enables your dynamoDB object so that it can be mocked by dynamock through the dynamodbiface.
+
 func ConfigureDynamoDB() {
 	Dyna = new(MyDynamo)
 	awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("eu-west-1")})
