@@ -12,6 +12,9 @@
 			#main-content {
 				padding: 10px;
 			}
+			.error {
+				color: red;
+			}
 		</style>
 		<title>Add drink</title>
 	</head>
@@ -20,18 +23,25 @@
 			<a href="http://localhost:8080/all-drinks">All drinks</a>
 		</div>
 		<main id="main-content" role="main">
-			{{if .Success}}
-			<h1>Your drink has been added!!</h1>
+			{{ if .Success }}
+			<h1>Confirmation</h1>
+			<h2>Your drink has been added!</h2>
 			{{else}}
-				<h2>Add a drink</h2>
-				<form method="POST">
-					<label>Title:</label><br />
-					<input type="text" name="drink-name" /><br />
-					<label>Price:</label><br />
-					<input type="text" name="drink-price" /><br /><br />
-					<input type="submit" value="Add drink" />
-				</form>
-			{{end}}
+			<h2>Add a drink</h2>
+			<form method="POST">
+				{{ with .Errors.Name }}
+				<p class="error">{{ . }}</p>
+				{{ end }}
+				<label>Title:</label><br />
+				<input type="text" name="drink-name" value="{{ .Name }}"/><br />
+				{{ with .Errors.Price }}
+				<p class="error" >{{ . }}</p>
+				{{ end }}
+				<label>Price:</label><br />
+				<input type="text" name="drink-price" value="{{ .Price }}"/><br /><br />
+				<input type="submit" value="Add drink" />
+			</form>
+			{{ end }}
         </main>
 	</body>
 </html>
