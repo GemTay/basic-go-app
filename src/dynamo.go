@@ -12,24 +12,12 @@ import (
 )
 
 type Drink struct {
-	Id    int
+	Id    int `json:",omitempty"`
 	Name  string
 	Price float64
 }
 
 const TABLE_NAME = "drinks"
-
-// var dynamo *dynamodb.DynamoDB
-
-// func init() {
-// 	dynamo = connectDynamoDB()
-// }
-
-// func connectDynamoDB() (db *dynamodb.DynamoDB) {
-// 	return dynamodb.New(session.Must(session.NewSession(&aws.Config{
-// 		Region: aws.String("eu-west-1"),
-// 	})))
-// }
 
 func CreateTable() {
 	_, err := Dyna.Db.CreateTable(&dynamodb.CreateTableInput{
@@ -66,7 +54,7 @@ func PutItem(drink Drink) {
 	_, err := Dyna.Db.PutItem(&dynamodb.PutItemInput{
 		Item: map[string]*dynamodb.AttributeValue{
 			"Id": {
-				N: aws.String(strconv.Itoa(drink.Id)),
+				N: aws.String(strconv.Itoa(len(GetAllItems()))),
 			},
 			"Name": {
 				S: aws.String(drink.Name),

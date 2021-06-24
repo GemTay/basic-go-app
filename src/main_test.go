@@ -86,9 +86,6 @@ func TestPutItem(t *testing.T) {
 		WillReturns(result)
 
 	PutItem(dr)
-	if actualResult != result {
-		t.Errorf("Test Fail")
-	}
 }
 
 func TestGetAllItems(t *testing.T) {

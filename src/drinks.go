@@ -1,16 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/GemTay/basic-go-app/forms"
 	"github.com/GemTay/basic-go-app/web/templates"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/schema"
 )
 
-var decoder = schema.NewDecoder()
+// var decoder = schema.NewDecoder()
 
 var drinksList = []*Drink{
 	&Drink{
@@ -64,42 +65,44 @@ func AddDrink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// r.PostForm is a map of our POST form values
-	err = decoder.Decode(DrinkData, r.PostForm)
+	// err = decoder.Decode(DrinkData, r.PostForm)
 
-	if err != nil {
-		log.Fatal("Failed to map form data to DrinkData type")
-	}
+	// if err != nil {
+	// 	log.Fatal("Failed to map form data to DrinkData type")
+	// }
 
-	// Do something with person.Name or person.Phone
+	// data := forms.DrinkData{
+	// 	Name:  r.PostFormValue("drink-name"),
+	// 	Price: r.PostFormValue("drink-price"),
+	// }
 
-	// Step 1: Validate form
-	msg := &DrinkData{
+	data := Drink{
 		Name:  r.PostFormValue("drink-name"),
 		Price: r.PostFormValue("drink-price"),
 	}
 
-	if msg.Validate() == false {
-		templates.Render(w, "add-drink.gohtml", msg)
-		return
-	}
+	err = data.ValidateAddDrink()
+	fmt.Println(err)
 
-	// Step 2: Send message in an email
-	// Step 3: Redirect to confirmation page
-
-	p, err := strconv.ParseFloat(r.FormValue("drink-price"), 64)
 	if err != nil {
-		log.Fatal(err)
+		err.Error()
+		templates.Render(w, "add-drink.gohtml", err)
+	} else {
+		p, err := strconv.ParseFloat(r.FormValue("drink-price"), 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		drink := Drink{
+			Id:    0,
+			Name:  r.FormValue("drink-name"),
+			Price: p,
+		}
+
+		PutItem(drink)
+
+		templates.Render(w, "add-drink-success.gohtml", nil)
 	}
-
-	drink := Drink{
-		Id:    8, //needs fixing
-		Name:  r.FormValue("drink-name"),
-		Price: p,
-	}
-
-	PutItem(drink)
-
-	templates.Render(w, "add-drink-success.gohtml", nil)
 }
 
 func seedDrinks() {
