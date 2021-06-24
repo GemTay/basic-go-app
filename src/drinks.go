@@ -64,19 +64,7 @@ func AddDrink(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Error parsing add drink form")
 	}
 
-	// r.PostForm is a map of our POST form values
-	// err = decoder.Decode(DrinkData, r.PostForm)
-
-	// if err != nil {
-	// 	log.Fatal("Failed to map form data to DrinkData type")
-	// }
-
-	// data := forms.DrinkData{
-	// 	Name:  r.PostFormValue("drink-name"),
-	// 	Price: r.PostFormValue("drink-price"),
-	// }
-
-	data := Drink{
+	data := forms.DrinkData{
 		Name:  r.PostFormValue("drink-name"),
 		Price: r.PostFormValue("drink-price"),
 	}
