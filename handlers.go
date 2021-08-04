@@ -11,8 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// var decoder = schema.NewDecoder()
-
 var drinksList = []*Drink{
 	&Drink{
 		Id:    1,
@@ -31,7 +29,7 @@ var drinksList = []*Drink{
 	},
 }
 
-func GetAllDrinks(w http.ResponseWriter, r *http.Request) {
+func GetAllDrinksHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Running the GET ALL drinks handler")
 
 	drinks := GetAllItems()
@@ -39,7 +37,7 @@ func GetAllDrinks(w http.ResponseWriter, r *http.Request) {
 	templates.Render(w, "get-all-drinks.gohtml", drinks)
 }
 
-func GetDrink(w http.ResponseWriter, r *http.Request) {
+func GetDrinkHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Running the GET drink handler")
 
 	id, convErr := strconv.Atoi(mux.Vars(r)["id"])
@@ -51,7 +49,7 @@ func GetDrink(w http.ResponseWriter, r *http.Request) {
 	templates.Render(w, "get-drink.gohtml", GetItem(id))
 }
 
-func AddDrink(w http.ResponseWriter, r *http.Request) {
+func AddDrinkHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Running the ADD drink handler")
 
 	if r.Method != http.MethodPost {

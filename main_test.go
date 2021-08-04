@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/gorilla/mux"
 	dynamock "github.com/gusaul/go-dynamock"
+	"github.com/stretchr/testify/assert"
 )
 
 var mock *dynamock.DynaMock
@@ -19,6 +20,29 @@ var mock *dynamock.DynaMock
 func init() {
 	Dyna = new(MyDynamo)
 	Dyna.Db, mock = dynamock.New()
+}
+
+func TestGetDrink(t *testing.T) {
+	req, err := http.NewRequest(http.MethodGet, "http://localhost:8080/drinks/3", nil)
+	res := httptest.NewRecorder()
+
+	if err != nil {
+		t.Errorf("Failed to create request for add drink")
+	}
+
+	GetDrink(res, req)
+
+	exp := Drink{
+		Id:    3,
+		Name:  "Cappuccino",
+		Price: 2.55,
+	}
+	act := res.Body.String()
+
+	// assert.HTTPSuccess(t, handler.ServeHTTP, "GET", "/helloworld", nil)
+	// assert.HTTPBodyContains(t, handler.ServeHTTP, "GET", "/helloworld", nil, "Hello World")
+
+	assert.Equal(t, exp, act)
 }
 
 func TestGetItem(t *testing.T) {
