@@ -53,6 +53,7 @@ func main() {
 	s := &http.Server{
 		Addr:         ":8080",
 		Handler:      mux,
+		ErrorLog:     errorLog,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Minute,
 		WriteTimeout: 15 * time.Minute,
