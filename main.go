@@ -7,36 +7,16 @@ import (
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
 
-type MyDynamo struct {
-	Db dynamodbiface.DynamoDBAPI
-}
-
-var Dyna *MyDynamo
-
-// this enables your dynamoDB object so that it can be mocked by dynamock through the dynamodbiface.
-
-func ConfigureDynamoDB() {
-	Dyna = new(MyDynamo)
-	awsSession, _ := session.NewSession(&aws.Config{Region: aws.String("eu-west-1")})
-	svc := dynamodb.New(awsSession)
-	Dyna.Db = dynamodbiface.DynamoDBAPI(svc)
+type application struct {
+	infoLog  *log.Logger
+	errorLog *log.Logger
 }
 
 func main() {
-	ConfigureDynamoDB()
-	seedDrinks()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/all-drinks", GetAllDrinksHandler)
-	mux.HandleFunc("/drinks/{id:[0-9]+}", GetDrinkHandler)
-	mux.HandleFunc("/add-drink", AddDrinkHandler)
+	ConfigureDynamoDB()
 
 	// This takes three parameters: the destination to write the logs to (os.Stdout), a string
 	// prefix for message (INFO followed by a tab), and flags to indicate what
@@ -49,10 +29,18 @@ func main() {
 	// file name and line number.
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
+	// Initialize a new instance of application containing the dependencies.
+	app := &application{
+		errorLog: errorLog,
+		infoLog:  infoLog,
+	}
+
+	// app.seedDrinks()
+
 	// setting up the http server
 	s := &http.Server{
 		Addr:         ":8080",
-		Handler:      mux,
+		Handler:      app.routes(),
 		ErrorLog:     errorLog,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Minute,
